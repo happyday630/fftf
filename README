@@ -1,0 +1,208 @@
+1. Source code structure
+
+ - frame.c (test framework source code)
+ - frame.h
+ - test_common.c (Debus common APIs)
+ - test_common.h
+ - utl.c (Some frequently used functions)
+ - test_main.c (Main function is here.)
+
+ - <sub_dirs> (All component MCA cases are here, each component will have own sub folder)
+
+2. How to compile MCA_TS
+
+run make under your buildroot workspace when you integrated this into your project.
+
+3. How to run cases by MCA_TS
+3.1 Get help
+
+<<
+
+:/>MCA_TS help
+
+Manual
+	run case
+		MCA_TS all	Or
+		MCA_TS <case_list>
+		Example:
+			MCA_TS 1.2.1		--run single case 1.2.1
+			MCA_TS 1.2.1,2.1,3	--run case 1.2.1, suite 2.1 and module 3
+	query case list
+		MCA_TS list	Or
+		MCA_TS list <case_list>
+	random run case(s)
+		MCA_TS random [-t times] [-r rand seed] <case_list>
+		 -t	specify how many times it would repeated. If no this option, the repeated times is default to 1000.
+		 -r	specify the rand seed. If no this option, the rand seed is default set to 60.
+	Add priority filter.
+		MCA_TS <case_list> [-priority P1 or P2 or P3]
+		Example:
+			MCA_TS all -priority P1		--run all the P1 cases.
+			MCA_TS 1.2,2 -priority P3	--run all the P3 cases of suite 1.2 and module 2.
+>>
+3.2 query case list
+
+<<
+
+:/>MCA_TS list
+
+Case List:
+        1 - test_module
+                1.1 - good_test_suite
+                1.1.1 - pass_case (weight:50)
+                1.1.2 - fail_case (weight:50)
+                1.1.3 - pass_case_again (weight:50)
+                1.1.4 - fail_case_again (weight:50)
+                1.2 - init_fail_suite
+                1.2.1 - init_fail_pass_case (weight:50)
+                1.2.2 - init_fail_fail_case (weight:50)
+                1.2.3 - init_fail_pass_case_again (weight:50)
+                1.2.4 - init_fail_fail_case_again (weight:50)
+                1.3 - crash_test_suite
+                1.3.1 - crash_in_the_first (weight:50)
+                1.3.2 - pass_case (weight:50)
+                1.3.3 - crash_in_the_middle (weight:50)
+                1.3.4 - fail_case (weight:50)
+                1.3.5 - crash_in_the_end (weight:50)
+        2 - second_module
+                2.1 - good_test_suite
+                2.1.1 - pass_case (weight:50)
+                2.1.2 - fail_case (weight:50)
+                2.1.3 - pass_case_again (weight:50)
+                2.1.4 - fail_case_again (weight:50)
+        3 - test_appman
+                3.1 - functionality_positive
+
+>>
+3.3 run case
+
+;/>MCA_TS 1  (run all cases of module which ID is 1)
+
+:/>MCA_TS 1.1 (run all cases of suite which ID is 1.1)
+
+;/>MCA_TS 1.1.1 (run the case which ID is 1.1.1)
+
+:/>MCA_TS all (run all the cases)
+
+The ID is assigned by framework. The number is related to the sequence of init. Earlier insert to MCA_TS, smaller the number of ID. If you want to know your case's ID, please query case list first.
+
+4 How to add new component test suites into MCA_TS
+4.1 Create new sub fold under .../opentv/test/MCA_TS/, Create Makefile.am like below:
+
+<<
+
+# Additional header files
+INCLUDES = \
+    -I $(WORKING_DIR)/staging/usr/include/dbus-1.0 \
+    -I $(WORKING_DIR)/staging/usr/lib/dbus-1.0/include \
+    -I $(WORKING_DIR)/staging/usr/include/glib-2.0 \
+    -I $(WORKING_DIR)/staging/usr/lib/glib-2.0/include
+
+noinst_LTLIBRARIES = \
+    lib<example_component>.la
+
+lib<example_component>_la_SOURCES =  <test_cases.c test_cases.h>
+
+>>
+
+Update red highlighted words base on actual.
+4.2 update MCA_TS/Makefile.am to link new lib into MCA_TS bin.
+
+<<
+
+MCA_TS_LDADD= $(LDADD)                    
+MCA_TS_LDADD+=<example_component/libexample_component.la>
+
+>>
+4.3 update MCA_TS/configure.ac to let build system compile the new sub folder.
+
+<<
+
+# Output files
+AC_CONFIG_FILES([
+Makefile
+<example_component/Makefile>
+])
+AC_OUTPUT
+
+>>
+5 How to create new cases for MCA_TS
+5.1 define test suite init function, clean function and test case function.
+
+test suite init is to setup testing environment. Please add dbus connectioning function calling here.
+
+test suite clean is to do cleanup when test suite finished, such free memory etc.
+
+test case function is the main function to do testing and verify.
+
+The sample code:
+
+<<
+
+static CaseResult pass_suite_init(void)
+{
+    CaseResult RetVal=RET_PASS;
+    QA_PRINT_PASS(("The suite init is success.\n"));
+    return RetVal;
+}
+
+static void suite_clean(void)
+{
+    QA_PRINT(1, ("The suite clean function.\n"));
+    return;
+}
+
+static CaseResult pass_case(void)
+{
+    CaseResult RetVal=RET_PASS;
+    QA_PRINT_PASS(("Hello world. it is pass case\n"));
+    return RetVal;
+}
+
+>>
+5.2 group test cases into suites then add test suites into MCA_TS
+
+The typical test suite have 1 suite init function, 1 suite cleanup function and several test cases. In run time, framework run suite init function first, if it return PASS, then run test cases one by one. in the last run cleanup function. It is the basic logic.
+
+<<
+
+CaseResult test_module_init(void)
+
+{
+
+    pModule = qa_frame_add_test_module("test_module", &error);    
+   
+    pSuite = qa_frame_add_test_suite(pModule, "good_test_suite", pass_suite_init, suite_clean, &error);    
+    
+    qa_frame_add_test_case(pSuite,"pass_case",pass_case,&error);
+    qa_frame_add_test_case(pSuite,"fail_case",fail_case,&error);
+    qa_frame_add_test_case(pSuite,"pass_case_again",pass_case,&error);
+    qa_frame_add_test_case(pSuite,"fail_case_again",fail_case,&error);  
+
+    ...
+
+}
+
+>>
+
+When add test cases and test suites into MCA_TS, we should give the case and suite names. The name rules:
+
+a, All the names should be meanfull. We DO NOT name case by "case_1", "case_2"...
+
+b, Module name is component name.
+5.3 Add the module init function into case_tree_init of test_main.c
+
+<<
+
+static void case_tree_init(void)
+{
+    qa_frame_initialize_test_registry();
+
+    /Below modules init function will create cases tree/    
+    test_module_init();
+    test_appman_init();
+
+    ...
+}
+
+>>

@@ -4,7 +4,7 @@ AM_LDADD = $(MCA_TS_LIBS)
 
 AM_LDFLAGS = $(MCA_TS_LIBS)
 
-SUBDIRS = example_component tss userauth resman MPM_SFS .
+SUBDIRS = example_component .
 
 bin_PROGRAMS =	MCA_TS 
 

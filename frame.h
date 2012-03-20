@@ -1,15 +1,14 @@
 /*----------------------------------------------------------
- | Quality Test suite
- | Copyright (C) Opentv
+ | Linux based APIs Auto Test Framework
  | ----------------------------------------------------------
  | QA test frame which managing tests and control cases running.
  |
- | File Name: 		frame.h
- | Author:		Hanson
- | Created date: 	11/03/2008
+ | File Name: 		frame.c
+ | Author:		Liu, Yang
+ | Created date: 	11/03/2011
  | Version: 		v_0_1
- | Last update: 	09/23/2011 Modify for OPENTV5 MCA
- | Updated by: 	Hanson
+ | Last update: 	03/20/2012
+ | Updated by: 	liuyang
  +----------------------------------------------------------*/
  
 #ifndef __FRAME_H__

@@ -12,7 +12,7 @@ m4_define([MCA_TS_version],
 		[MCA_TS_major_version.MCA_TS_minor_version.MCA_TS_micro_version])
 
 # Mandatory Autoconf initialization - AC_INIT(PACKAGE, VERSION, BUG-REPORT-ADDRESS)
-AC_INIT([MCA_TS], [MCA_TS_version], [hchen@opentv.com])
+AC_INIT([MCA_TS], [MCA_TS_version], [liuyang630@gmail.com])
 # Changing the Automake's Behavior
 # foreign is Automake option to relax some GNU standard requirements.
 AM_INIT_AUTOMAKE([color-tests] foreign)

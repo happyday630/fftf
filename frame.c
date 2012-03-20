@@ -1,15 +1,14 @@
 /*----------------------------------------------------------
- | Quality Test suite
- | Copyright (C) Opentv
+ | Linux based APIs Auto Test Framework
  | ----------------------------------------------------------
  | QA test frame which managing tests and control cases running.
  |
  | File Name: 		frame.c
- | Author:		Hanson
- | Created date: 	11/03/2008
+ | Author:		Liu, Yang
+ | Created date: 	11/03/2011
  | Version: 		v_0_1
- | Last update: 	09/23/2011 Modify for OPENTV5 MCA
- | Updated by: 	Hanson
+ | Last update: 	03/20/2012
+ | Updated by: 	liuyang
  +----------------------------------------------------------*/
 
 /*----------------------------------------------------------
@@ -41,8 +40,8 @@
 /*Case control running structs*/
 typedef struct TestResult
 {
-	struct TestModule	*pTestModule;	/*Pointer to test module*/
-	struct TestSuite	*pTestSuite;	/*Pointer to test suite*/
+	struct TestModule	*pTestModule;		/*Pointer to test module*/
+	struct TestSuite	*pTestSuite;		/*Pointer to test suite*/
 	struct TestCase 	*pTestCase;		/*Pointer to test case*/
 	guint			uiTimesOfPass;		/*Number of running times*/
 	guint			uiTimesOfFail;		/*Number of Fail times*/
@@ -66,10 +65,10 @@ typedef struct FrameStatus
 	struct TestResult	*pCurrentResult;		/*pointer to current running test case's result*/
 	struct TestResult	*pTestResult;			/*pointer to first test result record*/
 	gint				iNumOfRemainingCases;	/*The number of remaining cases need to run*/
-	gint				iNumOfRandomSteps;		/*The number of random stress steps*/
-	gint			iSumOfCaseWeight;			/*The sum of cases' weight*/
-	CaseRunningStatus		iStatus;			/*Stopped, running, or Pause*/
-	RunningMode	iRMode;							/*The running mode of current testing*/
+	gint				iNumOfRandomSteps;	/*The number of random stress steps*/
+	gint			iSumOfCaseWeight;		/*The sum of cases' weight*/
+	CaseRunningStatus		iStatus;		/*Stopped, running, or Pause*/
+	RunningMode	iRMode;					/*The running mode of current testing*/
 }FrameStatus;
 
 typedef struct PipeData

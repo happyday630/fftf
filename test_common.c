@@ -394,7 +394,7 @@ qaDestroyTimer(GTimer* Timer)
 	};
 }
 
-/*---------------------customerized data constructor----------------------------*/
+/*---------------------customized data constructor----------------------------*/
 GValue*
 new_g_value(GType type)
 {
